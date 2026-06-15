@@ -1,0 +1,108 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Regra de segurança padrão (Zero-Trust): Bloquear tudo
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Funções utilitárias seguras
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Verifica se o usuário é um administrador cadastrado
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'deciopadovanijr@gmail.com' ||
+        request.auth.token.email == 'admin@garradeagua.com.br' ||
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.token.email)) &&
+        get(/databases/$(database)/documents/usuarios/$(request.auth.token.email)).data.role == 'admin'
+      );
+    }
+
+    // Verifica se o usuário é o próprio aluno (autenticado) dono dos registros
+    function isOwner(alunoId) {
+      return isSignedIn() && (
+        request.auth.token.email != null &&
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.token.email)) &&
+        get(/databases/$(database)/documents/usuarios/$(request.auth.token.email)).data.alunoId == alunoId
+      );
+    }
+
+    // 2. Pré-Cadastro de Matrícula (Público apenas para criação / envio)
+    match /solicitacoes_matricula/{id} {
+      // Visitante: Apenas 'create' permitido (envio de formulário sem ler os demais)
+      allow create: if true;
+      // Administrador: Acesso completo para gerenciar, listar e aprovar/rejeitar
+      allow read, write: if isAdmin();
+    }
+
+    // 3. Usuários do Sistema
+    match /usuarios/{email} {
+      allow read, write: if isAdmin();
+      allow get: if isSignedIn() && request.auth.token.email == email;
+    }
+
+    // 4. Cadastro de Alunos
+    match /alunos/{id} {
+      allow read, write: if isAdmin();
+      allow get: if isOwner(id);
+    }
+
+    // 5. Mensalidades
+    match /mensalidades/{id} {
+      allow read, write: if isAdmin();
+      allow read: if isSignedIn() && (resource.data.alunoId == null || isOwner(resource.data.alunoId));
+    }
+
+    // 6. Presenças e Chamadas
+    match /presencas/{id} {
+      allow read, write: if isAdmin();
+      // Criar presenças autônomas para si mesmo ou ler as suas próprias chamadas
+      allow create: if isSignedIn() && request.resource.data.alunoId != null && isOwner(request.resource.data.alunoId);
+      allow read: if isSignedIn() && (resource.data.alunoId == null || isOwner(resource.data.alunoId));
+    }
+
+    // 7. Graduações e Exames de Faixa
+    match /graduacoes/{id} {
+      allow read, write: if isAdmin();
+      allow read: if isSignedIn() && (resource.data.alunoId == null || isOwner(resource.data.alunoId));
+    }
+
+    // 8. Estoque de Uniformes
+    match /uniformes/{id} {
+      allow read, write: if isAdmin();
+      allow read: if isSignedIn(); // Qualquer usuário logado pode consultar catálogo
+    }
+
+    // 9. Vendas de Uniformes
+    match /vendas/{id} {
+      allow read, write: if isAdmin();
+      allow read: if isSignedIn() && (resource.data.alunoId == null || isOwner(resource.data.alunoId));
+    }
+
+    // 10. Audit Logs (Logs de Auditoria)
+    match /audit_logs/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // 11. Comunicados Oficiais
+    match /comunicados/{id} {
+      allow read, write: if isAdmin();
+      allow read: if isSignedIn();
+    }
+
+    // 12. Feedbacks
+    match /feedbacks/{id} {
+      allow create: if isSignedIn();
+      allow read, write: if isAdmin();
+    }
+
+    // 13. Grupos Familiares
+    match /familias/{id} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

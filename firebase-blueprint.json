@@ -1,0 +1,205 @@
+{
+  "entities": {
+    "Aluno": {
+      "title": "Aluno",
+      "description": "Cadastro de aluno do dojô Garra de Águia",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome": { "type": "string" },
+        "email": { "type": "string" },
+        "telefone": { "type": "string" },
+        "dataNascimento": { "type": "string" },
+        "dataMatricula": { "type": "string" },
+        "ativo": { "type": "boolean" },
+        "plano": { "type": "string" },
+        "graduacao": { "type": "string" },
+        "familiaId": { "type": "string" },
+        "observacoes": { "type": "string" },
+        "modalidade": { "type": "string" },
+        "dataUltimaGraduacao": { "type": "string" },
+        "horasAcumuladas": { "type": "number" },
+        "tempoNaFaixaMeses": { "type": "number" },
+        "elegivelExame": { "type": "boolean" },
+        "observacoesGraduacao": { "type": "string" }
+      },
+      "required": ["id", "nome", "email", "plano", "graduacao"]
+    },
+    "Familia": {
+      "title": "Familia",
+      "description": "Grupo familiar para receber desconto conjunto de mensalidade",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome": { "type": "string" },
+        "descontoManual": { "type": "number" },
+        "membrosIds": { "type": "array" }
+      },
+      "required": ["id", "nome", "descontoManual", "membrosIds"]
+    },
+    "Mensalidade": {
+      "title": "Mensalidade",
+      "description": "Status de pagamento mensal por aluno",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "alunoId": { "type": "string" },
+        "mesReferencia": { "type": "string" },
+        "valorOriginal": { "type": "number" },
+        "descontoAplicado": { "type": "number" },
+        "valorPago": { "type": "number" },
+        "dataPagamento": { "type": "string" },
+        "status": { "type": "string" },
+        "metodoPagamento": { "type": "string" },
+        "vencimento": { "type": "string" }
+      },
+      "required": ["id", "alunoId", "mesReferencia", "valorOriginal", "descontoAplicado", "valorPago", "status", "vencimento"]
+    },
+    "Presenca": {
+      "title": "Presenca",
+      "description": "Presença registrada de aula",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "alunoId": { "type": "string" },
+        "data": { "type": "string" },
+        "horario": { "type": "string" },
+        "status": { "type": "string" },
+        "solicitadaEm": { "type": "string" },
+        "aprovadaEm": { "type": "string" }
+      },
+      "required": ["id", "alunoId", "data", "horario", "status", "solicitadaEm"]
+    },
+    "GraduacaoExame": {
+      "title": "GraduacaoExame",
+      "description": "Histórico de exames de faixas/graduações",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "alunoId": { "type": "string" },
+        "faixaAnterior": { "type": "string" },
+        "faixaNova": { "type": "string" },
+        "dataExame": { "type": "string" },
+        "resultado": { "type": "string" },
+        "formasAvaliadas": { "type": "array" },
+        "avaliador": { "type": "string" },
+        "comentarios": { "type": "string" }
+      },
+      "required": ["id", "alunoId", "faixaAnterior", "faixaNova", "dataExame", "resultado", "formasAvaliadas", "avaliador"]
+    },
+    "UniformeItem": {
+      "title": "UniformeItem",
+      "description": "Item de vestimentas / uniforme em estoque",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome": { "type": "string" },
+        "tamanho": { "type": "string" },
+        "categoria": { "type": "string" },
+        "estoque": { "type": "number" },
+        "precoVenda": { "type": "number" },
+        "estoqueMinimo": { "type": "number" }
+      },
+      "required": ["id", "nome", "tamanho", "categoria", "estoque", "precoVenda", "estoqueMinimo"]
+    },
+    "VendaUniforme": {
+      "title": "VendaUniforme",
+      "description": "Histórico de vendas de uniforme para alunos",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "itemId": { "type": "string" },
+        "alunoId": { "type": "string" },
+        "quantidade": { "type": "number" },
+        "valorTotal": { "type": "number" },
+        "dataVenda": { "type": "string" }
+      },
+      "required": ["id", "itemId", "alunoId", "quantidade", "valorTotal", "dataVenda"]
+    },
+    "Usuario": {
+      "title": "Usuario",
+      "description": "Controle de permissões e perfis de acesso do sistema de gerenciamento",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "aluno"] },
+        "alunoId": { "type": "string" }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "Comunicado": {
+      "title": "Comunicado",
+      "description": "Avisos, comunicados e eventos publicados pelo administrador",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "titulo": { "type": "string" },
+        "conteudo": { "type": "string" },
+        "categoria": { "type": "string", "enum": ["evento", "exame", "horario", "geral"] },
+        "dataPublicacao": { "type": "string" },
+        "autor": { "type": "string" }
+      },
+      "required": ["id", "titulo", "conteudo", "categoria", "dataPublicacao", "autor"]
+    },
+    "SolicitacaoMatricula": {
+      "title": "SolicitacaoMatricula",
+      "description": "Pré-cadastro de matrícula sob aprovação administrativa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome": { "type": "string" },
+        "cpf": { "type": "string" },
+        "telefone": { "type": "string" },
+        "email": { "type": "string" },
+        "dataNascimento": { "type": "string" },
+        "modalidades": { "type": "array" },
+        "dataSolicitacao": { "type": "string" },
+        "status": { "type": "string", "enum": ["pendente", "aprovado", "rejeitado"] }
+      },
+      "required": ["id", "nome", "cpf", "telefone", "email", "dataNascimento", "modalidades", "dataSolicitacao", "status"]
+    }
+  },
+  "firestore": {
+    "alunos": {
+      "schema": "Aluno",
+      "description": "Cadastros de alunos ativos e inativos"
+    },
+    "familias": {
+      "schema": "Familia",
+      "description": "Cadastros de grupos familiares"
+    },
+    "mensalidades": {
+      "schema": "Mensalidade",
+      "description": "Status financeiro mensal por aluno"
+    },
+    "presencas": {
+      "schema": "Presenca",
+      "description": "Registros e solicitações de chamada"
+    },
+    "graduacoes": {
+      "schema": "GraduacaoExame",
+      "description": "Históricos de exames de graduações"
+    },
+    "uniformes": {
+      "schema": "UniformeItem",
+      "description": "Estoque de kimonos, faixas, calças e camisas do dojo"
+    },
+    "vendas": {
+      "schema": "VendaUniforme",
+      "description": "Registros de vendas de uniforme no dojo"
+    },
+    "usuarios": {
+      "schema": "Usuario",
+      "description": "Controle de login e correspondência de nível de usuário"
+    },
+    "comunicados": {
+      "schema": "Comunicado",
+      "description": "Tabela de anúncios administrativos que são automaticamente distribuídos no Portal"
+    },
+    "solicitacoes_matricula": {
+      "schema": "SolicitacaoMatricula",
+      "description": "Coleção de solicitações de pré-cadastro para matrícula assistida"
+    }
+  }
+}

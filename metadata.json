@@ -1,0 +1,6 @@
+{
+  "name": "Kung Fu Garra de Águia Praia Grande",
+  "description": "Sistema oficial de gestão da academia Kung Fu Garra de Águia Praia Grande, abrangendo alunos, planos, mensalidades, presenças, graduações e estoque.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
